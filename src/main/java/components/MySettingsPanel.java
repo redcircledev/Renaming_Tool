@@ -32,6 +32,8 @@ public class MySettingsPanel extends JPanel {
     JCheckBox sameAsInputFolder;
     JCheckBox separateSeasons;
     JCheckBox inferFromInputFolder;
+    JCheckBox seasonNameNotNeeded;
+    JCheckBox inferEpisodeNumberByName;
     JFileChooser chooser;
 
     ArrayList<SeasonModel> seasons;
@@ -44,6 +46,7 @@ public class MySettingsPanel extends JPanel {
     String showSeasonNameString = new String("No Season Name Given");
     String seasonNumberString = new String("No Season Number Given");
     boolean seasonNumberError = false;
+    boolean inferEpisodeNumber = false;
     int mode;
 
     public MySettingsPanel(JFrame parentFrame) {
@@ -61,6 +64,8 @@ public class MySettingsPanel extends JPanel {
         sameAsInputFolder = new JCheckBox("Same As Input Folder",false);
         separateSeasons = new JCheckBox("Separate Seasons In New Folders", false);
         inferFromInputFolder = new JCheckBox("Infer From Input Folder", false);
+        seasonNameNotNeeded = new JCheckBox("Season Name Not Needed");
+        inferEpisodeNumberByName = new JCheckBox("Infer Episode Number By File Name");
         this.addActionListeners();
         this.createLayout();
     }
@@ -74,7 +79,7 @@ public class MySettingsPanel extends JPanel {
 
         this.add(inputFolder);
         this.add(inputFolderPath);
-        this.add(new JLabel());
+        this.add(inferEpisodeNumberByName);
 
         this.add(outputFolder);
         this.add(outputFolderPath);
@@ -86,7 +91,7 @@ public class MySettingsPanel extends JPanel {
 
         this.add(showSeasonNameLabel);
         this.add(showSeasonName);
-        this.add(new JLabel());
+        this.add(seasonNameNotNeeded);
 
         this.add(seasonNumberLabel);
         this.add(seasonNumber);
@@ -106,7 +111,7 @@ public class MySettingsPanel extends JPanel {
 
         this.add(inputFolder);
         this.add(inputFolderPath);
-        this.add(new JLabel());
+        this.add(inferEpisodeNumberByName);
 
         this.add(outputFolder);
         this.add(outputFolderPath);
@@ -118,7 +123,7 @@ public class MySettingsPanel extends JPanel {
 
         this.add(showSeasonNameLabel);
         this.add(showSeasonName);
-        this.add(new JLabel());
+        this.add(seasonNameNotNeeded);
 
         this.add(seasonNumberLabel);
         this.add(seasonNumber);
@@ -311,6 +316,26 @@ public class MySettingsPanel extends JPanel {
                 }
             }
         });
+        seasonNameNotNeeded.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (seasonNameNotNeeded.isSelected()) {
+                    showSeasonNameString = "";
+                    showSeasonName.setText(showSeasonNameString);
+                    showSeasonName.setEditable(false);
+                } else {
+                    showNameString = "No Season Name Given";
+                    showSeasonName.setText(showSeasonNameString);
+                    showSeasonName.setEditable(true);
+                }
+            }
+        });
+        inferEpisodeNumberByName.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inferEpisodeNumber = inferEpisodeNumberByName.isSelected();
+            }
+        });
     }
 
     public String chooseFile(ActionEvent e, int mode){
@@ -342,6 +367,10 @@ public class MySettingsPanel extends JPanel {
             System.out.println("No selection was made");
         }
         return "";
+    }
+
+    public boolean isInferEpisodeNumber() {
+        return inferEpisodeNumber;
     }
 
     public boolean isSeasonNumberError() {

@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 public class Main {
@@ -71,13 +72,21 @@ public class Main {
                         Path path = Paths.get(northPanel.getInputFolderPathString());
                         File[] list = path.toFile().listFiles();
                         int i = 1;
+                        String modifiedFileName;
                         assert list != null;
                         for (File fileEntry : list){
-                            String modifiedFileName = northPanel.getShowNameString() + " S" + northPanel.getSeasonNumberString() + "E" + i + fileEntry.getName().substring(fileEntry.getName().lastIndexOf("."));
+                            if (northPanel.isInferEpisodeNumber()) {
+                                modifiedFileName = northPanel.getShowNameString() + " S" + northPanel.getSeasonNumberString() + "E" + extractNumber(fileEntry.getName()) + fileEntry.getName().substring(fileEntry.getName().lastIndexOf("."));
+                            } else {
+                                modifiedFileName = northPanel.getShowNameString() + " S" + northPanel.getSeasonNumberString() + "E" + i + fileEntry.getName().substring(fileEntry.getName().lastIndexOf("."));
+                            }
                             FileObject currentObject = new FileObject(i, fileEntry.getName(), modifiedFileName, northPanel.getInputFolderPathString(), northPanel.getOutputFolderPathString(), "Not Completed");
                             listOfFiles.add(currentObject);
-                            centerPanel.addNewRow(currentObject.getIndex(), currentObject.getOriginalFileName(), currentObject.getModifiedFilename(), currentObject.getOriginalFolderName(), currentObject.getModifiedFolderName(), currentObject.getStatus());
                             i++;
+                        }
+                        Collections.sort(listOfFiles);
+                        for (FileObject file : listOfFiles) {
+                            centerPanel.addNewRow(file.getIndex(), file.getOriginalFileName(), file.getModifiedFilename(), file.getOriginalFolderName(), file.getModifiedFolderName(), file.getStatus());
                         }
                     }catch (Exception ex){
                         System.out.println(ex.getMessage());
@@ -113,8 +122,9 @@ public class Main {
                         indexToRemove.add(i);
                     }
                 }
-                for (Integer integer : indexToRemove) {
-                    centerPanel.removeRow(integer);
+                for (int i = indexToRemove.size() ; i > 0 ; i--) {
+                    centerPanel.removeRow(indexToRemove.get(i-1));
+                    listOfFiles.remove(i-1);
                 }
             }
         });
@@ -128,5 +138,21 @@ public class Main {
         frame.getContentPane().add(mainPanel,"Center");
         frame.pack();
         frame.setVisible(true);
+    }
+
+    public static String extractNumber(final String str) {
+        if(str == null || str.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        boolean found = false;
+        for(char c : str.toCharArray()){
+            if(Character.isDigit(c)){
+                sb.append(c);
+                found = true;
+            } else if(found){
+                // If we already found a digit before and this char is not a digit, stop looping
+                break;
+            }
+        }
+        return sb.toString();
     }
 }

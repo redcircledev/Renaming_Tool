@@ -1,6 +1,6 @@
 package models;
 
-public class FileObject {
+public class FileObject implements Comparable<FileObject> {
 
     private int index;
     private String originalFileName;
@@ -76,5 +76,10 @@ public class FileObject {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public int compareTo(FileObject o) {
+        return this.originalFileName.compareTo(o.originalFileName);
     }
 }
